@@ -11,8 +11,10 @@ interface CustomerProps {
 }
 
 export default function App() {
-  const [editar, setEditar] = useState(false);
+  const [cadastrar, setCadastrar] = useState(true); // Alterado para controlar o estado de cadastro ou edição
+  const [clientesVisible, setClientesVisible] = useState(false); // Estado para controlar a visibilidade dos clientes
   const [editandoId, setEditandoId] = useState<string | null>(null); // Adicionando estado para armazenar o ID do cliente que está sendo editado
+  const [buttonText, setButtonText] = useState("Clientes Cadastrados"); // Estado para controlar o texto do botão
 
   const nameRef = useRef<HTMLInputElement | null>(null)
   const emailRef = useRef<HTMLInputElement | null>(null)
@@ -35,8 +37,8 @@ export default function App() {
       return;
     };
 
-    if (!editar) {
-      // Se não estiver editando, cadastre um novo cliente
+    if (cadastrar) {
+      // Se estiver cadastrando, cadastre um novo cliente
       const response = await api.post("/customer", {
         name: nameRef.current?.value,
         email: emailRef.current?.value
@@ -64,8 +66,9 @@ export default function App() {
         });
 
         setCustomers(updatedCustomers);
-        setEditar(false);
+        setCadastrar(true);
         setEditandoId(null);
+        clearFields(); // Limpa os campos após a atualização
       }
     }
 
@@ -90,7 +93,7 @@ export default function App() {
     // Ao clicar no botão de editar, preencha os campos com os dados do cliente selecionado
     const customerToEdit = customers.find(customer => customer.id === id);
     if (customerToEdit) {
-      setEditar(true);
+      setCadastrar(false); // Alterando para modo de edição
       setEditandoId(id);
   
       // Verifica se as referências estão definidas antes de atribuir valores a elas
@@ -102,12 +105,31 @@ export default function App() {
       }
     }
   }
-  
+
+  // Função para limpar os campos do formulário
+  function clearFields() {
+    if (nameRef.current && emailRef.current) {
+      nameRef.current.value = "";
+      emailRef.current.value = "";
+    }
+  }
+
+  // Função para mostrar e ocultar clientes
+  function handleShowCustomers() {
+    setClientesVisible(!clientesVisible); // Alternar entre mostrar e ocultar os clientes
+    
+    // Alterar o texto do botão com base na visibilidade dos clientes
+    if (clientesVisible) {
+      setButtonText("Clientes Cadastrados");
+    } else {
+      setButtonText("Ocultar Clientes");
+    }
+  }
 
   return (
-    <div className="w-full min-h-screen bg-gray-900 flex justify-center px-4">
+    <div className="w-full min-h-screen bg-blue-950 flex justify-center px-4">
       <main className="my-10 w-full md:max-w-2xl">
-        <h1 className="text-4xl font-medium text-white">Clientes</h1>
+        <h1 className="text-4xl font-medium text-white">Cadastro de Clientes</h1>
 
         <form className="flex flex-col my-6" onSubmit={handleSubmit}>
           <label className="font-medium text-white">Nome:</label>
@@ -126,35 +148,61 @@ export default function App() {
             ref={emailRef}
           />
 
-          <input type="submit" value={editar ? "Atualizar" : "Cadastrar"} className="cursor-pointer w-full p-2 bg-green-500 rounded font-medium" />
+          <input 
+            type="submit" 
+            value={cadastrar ? "Cadastrar" : "Atualizar"} 
+            className="cursor-pointer w-full p-2 bg-green-300 rounded font-medium hover:bg-green-400 active:bg-green-700 focus:outline-none focus:ring" 
+          />
+
+          {!cadastrar && (
+            <button
+              type="button"
+              onClick={() => {
+                setCadastrar(true); // Voltar para o modo de cadastro
+                clearFields(); // Limpar os campos
+              }}
+              className="cursor-pointer w-full mt-6 p-2 bg-red-300 rounded font-medium hover:bg-green-400 active:bg-green-700 focus:outline-none focus:ring"
+            >
+              Cancelar Edição
+            </button>
+          )}
         </form>
 
-        <section className="flex flex-col gap-4">
-          {customers.map((customer) => (
-            <article
-              key={customer.id}
-              className="w-full bg-white rounded p-2 relative hover:scale-105 duration-200"
-            >
-              <p><span className="font-medium">Nome:</span>{customer.name}</p>
-              <p><span className="font-medium">Email:</span>{customer.email}</p>
-              <p><span className="font-medium">Status:</span>{customer.status ? "Ativo" : "Inativo"}</p>
+        <button
+          onClick={handleShowCustomers}
+          className="cursor-pointer w-full p-2 bg-green-300 rounded font-medium hover:bg-green-400 active:bg-green-700 focus:outline-none focus:ring"
+        >
+          {buttonText}
+        </button>
 
-              <button
-                className='bg-red-500 w-7 h-7 flex items-center justify-center rounded-lg absolute right-0 -top-2'
-                onClick={() => handleDelete(customer.id)}
+        {clientesVisible && (
+          <section className="flex flex-col gap-4 mt-4">
+            {customers.map((customer) => (
+              <article
+                key={customer.id}
+                className="w-full bg-white rounded p-2 relative hover:scale-105 duration-200"
               >
-                <FiTrash size={18} color="#FFF" />
-              </button>
+                <p><span className="font-medium">Nome:</span>{customer.name}</p>
+                <p><span className="font-medium">Email:</span>{customer.email}</p>
+                <p><span className="font-medium">Status:</span>{customer.status ? "Ativo" : "Inativo"}</p>
 
-              <button
-                className='bg-blue-500 w-7 h-7 flex items-center justify-center rounded-lg absolute right-10 -top-2'
-                onClick={() => handleEdit(customer.id)}
-              >
-                <FiEdit size={18} color="#FFF" />
-              </button>
-            </article>
-          ))}
-        </section>
+                <button
+                  className='bg-red-500 w-7 h-7 flex items-center justify-center rounded-lg absolute right-0 -top-2'
+                  onClick={() => handleDelete(customer.id)}
+                >
+                  <FiTrash size={18} color="#FFF" />
+                </button>
+
+                <button
+                  className='bg-blue-500 w-7 h-7 flex items-center justify-center rounded-lg absolute right-10 -top-2'
+                  onClick={() => handleEdit(customer.id)}
+                >
+                  <FiEdit size={18} color="#FFF" />
+                </button>
+              </article>
+            ))}
+          </section>
+        )}
       </main>
     </div>
   )
