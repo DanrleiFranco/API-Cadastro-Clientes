@@ -9,7 +9,7 @@ class DeleteCurtomerService{
     async execute({id}: DeleteCurtomerProps){
 
       if(!id){
-        throw new Error("Solocitação inválida.")
+        throw new Error("Solicitação inválida.")
       }
 
       const findCustomer = await prismaClient.customer.findFirst({
@@ -19,7 +19,7 @@ class DeleteCurtomerService{
       })
 
       if(!findCustomer){
-        throw new Error("Cliente não existe")
+        throw new Error("Usuário inexistente")
       }
 
       await prismaClient.customer.delete({
@@ -28,7 +28,7 @@ class DeleteCurtomerService{
         }
       })
 
-      return {message: "deletado com sucesso"}
+      return {message: "Deletado com sucesso"}
 
     }        
 }

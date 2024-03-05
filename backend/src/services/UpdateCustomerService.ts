@@ -19,7 +19,7 @@ class UpdateCustomerService {
         })
 
         if (!findCustomer) {
-            throw new Error("Cliente não existe")
+            throw new Error("Usuário inixistente")
         }
 
         const updatedCustomer = await prismaClient.customer.update({

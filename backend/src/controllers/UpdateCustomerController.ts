@@ -3,8 +3,8 @@ import { UpdateCustomerService } from '../services/UpdateCustomerService'
 
 class UpdateCustomerController {
     async handle(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id: string } // Acessar o ID da URL
-        const { name, email } = request.body as { name: string, email: string } // Acessar os dados do corpo da solicitação
+        const { id } = request.params as { id: string } 
+        const { name, email } = request.body as { name: string, email: string }
 
         const customerService = new UpdateCustomerService()
 
