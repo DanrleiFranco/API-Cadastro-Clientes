@@ -14,7 +14,7 @@ export default function App() {
   const [cadastrar, setCadastrar] = useState(true); // Alterado para controlar o estado de cadastro ou edição
   const [clientesVisible, setClientesVisible] = useState(false); // Estado para controlar a visibilidade dos clientes
   const [editandoId, setEditandoId] = useState<string | null>(null); // Adicionando estado para armazenar o ID do cliente que está sendo editado
-  const [buttonText, setButtonText] = useState("Clientes Cadastrados"); // Estado para controlar o texto do botão
+  const [buttonText, setButtonText] = useState("Usuários Cadastrados"); // Estado para controlar o texto do botão
 
   const nameRef = useRef<HTMLInputElement | null>(null)
   const emailRef = useRef<HTMLInputElement | null>(null)
@@ -27,6 +27,7 @@ export default function App() {
   async function loadCustomers() {
     const response = await api.get("/customers")
     setCustomers(response.data);
+    //console.log(customers)
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -120,38 +121,38 @@ export default function App() {
     
     // Alterar o texto do botão com base na visibilidade dos clientes
     if (clientesVisible) {
-      setButtonText("Clientes Cadastrados");
+      setButtonText("Usuários Cadastrados");
     } else {
-      setButtonText("Ocultar Clientes");
+      setButtonText("Ocultar Usuários");
     }
   }
 
   return (
-    <div className="w-full min-h-screen bg-blue-950 flex justify-center px-4">
+    <div className="w-full min-h-screen bg-white flex justify-center px-4">
       <main className="my-10 w-full md:max-w-2xl">
-        <h1 className="text-4xl font-medium text-white">Cadastro de Clientes</h1>
+        <h1 className="text-4xl font-medium text-black">{ cadastrar ? "Cadastrar Usuários" : "Atualizar dados"}</h1>
 
         <form className="flex flex-col my-6" onSubmit={handleSubmit}>
-          <label className="font-medium text-white">Nome:</label>
+          <label className="font-medium text-black">Nome:</label>
           <input
             type="text"
             placeholder="Digite seu nome"
-            className="w-full mb-5 rounded"
+            className="w-full mb-5 border border-black rounded p-2"
             ref={nameRef}
           />
 
-          <label className="font-medium text-white">Email:</label>
+          <label className="font-medium text-black">Email:</label>
           <input
             type="email"
             placeholder="Digite seu Email"
-            className="w-full mb-5 rounded"
+            className="w-full mb-5 border border-black rounded p-2"
             ref={emailRef}
           />
 
           <input 
             type="submit" 
             value={cadastrar ? "Cadastrar" : "Atualizar"} 
-            className="cursor-pointer w-full p-2 bg-green-300 rounded font-medium hover:bg-green-400 active:bg-green-700 focus:outline-none focus:ring" 
+            className="cursor-pointer w-full p-2 bg-blue-300 rounded font-medium hover:bg-blue-400 active:bg-blue-700 focus:outline-none focus:ring" 
           />
 
           {!cadastrar && (
@@ -161,7 +162,7 @@ export default function App() {
                 setCadastrar(true); // Voltar para o modo de cadastro
                 clearFields(); // Limpar os campos
               }}
-              className="cursor-pointer w-full mt-6 p-2 bg-red-300 rounded font-medium hover:bg-green-400 active:bg-green-700 focus:outline-none focus:ring"
+              className="cursor-pointer w-full mt-6 p-2 bg-red-300 rounded font-medium hover:bg-red-400 focus:outline-none focus:ring"
             >
               Cancelar Edição
             </button>
@@ -170,7 +171,7 @@ export default function App() {
 
         <button
           onClick={handleShowCustomers}
-          className="cursor-pointer w-full p-2 bg-green-300 rounded font-medium hover:bg-green-400 active:bg-green-700 focus:outline-none focus:ring"
+          className="cursor-pointer w-full p-2 bg-blue-300 rounded font-medium hover:bg-blue-400 active:bg-blue-700 focus:outline-none focus:ring"
         >
           {buttonText}
         </button>
@@ -180,7 +181,7 @@ export default function App() {
             {customers.map((customer) => (
               <article
                 key={customer.id}
-                className="w-full bg-white rounded p-2 relative hover:scale-105 duration-200"
+                className="w-full bg-gray-200 rounded p-2 relative hover:scale-105 duration-200"
               >
                 <p><span className="font-medium">Nome:</span>{customer.name}</p>
                 <p><span className="font-medium">Email:</span>{customer.email}</p>
